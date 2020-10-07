@@ -1,0 +1,18 @@
+# Build Validation pipeline
+# This Pipeline is used to trigger teh Pester test files when a PR is created
+# Read more on
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: Pester Powershell unittest@2
+  inputs:
+    ItemSpec: '*.tests.ps1'
+    FailOnError: true
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '**/TEST-*.xml'
