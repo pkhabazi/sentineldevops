@@ -50,6 +50,10 @@ parameters:
     displayName: Enter the Resource group name for Playbooks and Workbooks
     type: string
 
+  - name: ResourceGroupLocation
+    displayName: Enter the Resource group location for Playbooks and Workbooks
+    type: string
+
 jobs:
   - deployment: 'Sentinel'
     displayName: DeploySentinelSolution
@@ -89,6 +93,11 @@ jobs:
                   ScriptType: 'InlineScript'
                   Inline: |
                     $armTemplateFiles = Get-ChildItem -Path ${{ parameters.PlaybooksFolder }} -Filter *.json
+
+                    $rg = Get-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -ErrorAction SilentlyContinue
+                    if ($null -eq $rg) {
+                      New-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -Location ${{ parameters.ResourceGroupLocation }}
+                    }
 
                     foreach ($armTemplate in $armTemplateFiles) {
                       New-AzResourceGroupDeployment -ResourceGroupName ${{ parameters.ResourceGroupName }} -TemplateFile $armTemplate
@@ -137,6 +146,11 @@ jobs:
                   ScriptType: 'InlineScript'
                   Inline: |
                     $armTemplateFiles = Get-ChildItem -Path ${{ parameters.WorkbooksFolder }} -Filter *.json
+
+                    $rg = Get-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -ErrorAction SilentlyContinue
+                    if ($null -eq $rg) {
+                      New-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -Location ${{ parameters.ResourceGroupLocation }}
+                    }
 
                     foreach ($armTemplate in $armTemplateFiles) {
                       New-AzResourceGroupDeployment -ResourceGroupName ${{ parameters.ResourceGroupName }} -TemplateFile $armTemplate -WorkbookSourceId ${{ parameters.WorkbookSourceId }}
