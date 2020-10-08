@@ -1,5 +1,5 @@
-#This is the Template that is used from the Main pipeline
-# this template contains all the required steps
+# This is the Template that is used from the Main pipeline
+# This template contains all the required steps
 
 parameters:
   - name: environment
@@ -31,23 +31,23 @@ parameters:
     type: string
 
   - name: PlaybooksFolder
-    displayName:
+    displayName: The path to the fodler with the playbook JSON files
     type: string
 
   - name: ConnectorsFile
-    displayName:
+    displayName: The path to DataConnector json file
     type: string
 
   - name: WorkbooksFolder
-    displayName:
+    displayName: The path to the folder which contains the Workbooks JSON files
     type: string
 
   - name: WorkbookSourceId
-    displayName:
+    displayName: The id of resource instance to which the workbook will be associated
     type: string
 
   - name: ResourceGroupName
-    displayName:
+    displayName: Enter the Resource group name for Playbooks and Workbooks
     type: string
 
 jobs:
