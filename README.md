@@ -1,4 +1,6 @@
-![cat04](images/cat04.png)
+<p align="center">
+  <img src="images/cat04.png" />
+</p>
 
 # Deploying and Managing Azure Sentinel – Ninja style
 A couple of months ago Javier and Philippe wrote a great blog on how to deploy, configure and maintain Azure Sentinel through Azure DevOps with IaC using AzSentinel. We are now a couple of months further and more and more functions are integrated in AzSentinel.
