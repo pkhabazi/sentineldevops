@@ -1,0 +1,63 @@
+# This is the main pipelien which covers all the stages
+# The tasks are stored in pipelines/steps.yml
+# you can read more about this:
+
+stages:
+  - stage: Dev
+    displayName: 'Deploying to Development environment'
+    jobs:
+      - template: pipelines/steps.yml
+        parameters:
+          environment: Dev
+          azureSubscription: ''
+          WorkspaceName: '' # Enter the Azure Sentinel Workspace name
+          SubscriptionId: 'cd466daa-3528-481e-83f1-7a7148706287'
+          ResourceGroupName: ''
+          ResourceGroupLocation: 'westeurope'
+          EnableSentinel: true
+          analyticsRulesFile: SettingFiles/AlertRules.json # leave empty if you dont want to configure Analytic rules
+          huntingRulesFile: SettingFiles/HuntingRules.json # leave empty if you dont want to configure Hunting rules
+          PlaybooksFolder: Playbooks/ # leave empty if you dont want to configure Playbooks
+          ConnectorsFile: SettingFiles/DataConnectors.json # leave empty if you dont want to configure Connectors
+          WorkbooksFolder: Workbooks/
+          WorkbookSourceId: '' # leave empty if you dont want to configure Workbook
+
+  - stage: Staging
+    displayName: 'Deploying to Acceptance environment'
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release'))
+    jobs:
+      - template: pipelines/steps.yml
+        parameters:
+          environment: Staging
+          azureSubscription: ''
+          WorkspaceName: '' # Enter the Azure Sentinel Workspace name
+          SubscriptionId: 'cd466daa-3528-481e-83f1-7a7148706287'
+          ResourceGroupName: ''
+          ResourceGroupLocation: 'westeurope'
+          EnableSentinel: true
+          analyticsRulesFile: SettingFiles/AlertRules.json # leave empty if you dont want to configure Analytic rules
+          huntingRulesFile: SettingFiles/HuntingRules.json # leave empty if you dont want to configure Hunting rules
+          PlaybooksFolder: Playbooks/ # leave empty if you dont want to configure Playbooks
+          ConnectorsFile: SettingFiles/DataConnectors.json # leave empty if you dont want to configure Connectors
+          WorkbooksFolder: Workbooks/
+          WorkbookSourceId: '' # leave empty if you dont want to configure Workbook
+
+  - stage: Production
+    displayName: 'Deploying to Production environment'
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    jobs:
+      - template: pipelines/steps.yml
+        parameters:
+          environment: Production
+          azureSubscription: ''
+          WorkspaceName: ''  # Enter the Azure Sentinel Workspace name
+          SubscriptionId: 'cd466daa-3528-481e-83f1-7a7148706287'
+          ResourceGroupName: ''
+          ResourceGroupLocation: 'westeurope'
+          EnableSentinel: true
+          analyticsRulesFile: SettingFiles/AlertRules.json # leave empty if you dont want to configure Analytic rules
+          huntingRulesFile: SettingFiles/HuntingRules.json # leave empty if you dont want to configure Hunting rules
+          PlaybooksFolder: Playbooks/ # leave empty if you dont want to configure Playbooks
+          ConnectorsFile: SettingFiles/DataConnectors.json # leave empty if you dont want to configure Connectors
+          WorkbooksFolder: Workbooks/
+          WorkbookSourceId: '' # leave empty if you dont want to configure Workbook

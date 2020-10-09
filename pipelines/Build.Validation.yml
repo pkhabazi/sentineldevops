@@ -1,0 +1,23 @@
+# Build Validation pipeline
+# This Pipeline is used to trigger teh Pester test files when a PR is created
+# Read more on
+
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Invoke-Pester *.tests.ps1 -OutputFile ./test-results.xml -OutputFormat NUnitXml'
+    errorActionPreference: 'continue'
+    pwsh: true
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '**/test-results.xml'
+    failTaskOnFailedTests: true

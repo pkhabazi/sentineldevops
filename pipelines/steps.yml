@@ -1,0 +1,159 @@
+# This is the Template that is used from the Main pipeline
+# This template contains all the required steps
+
+parameters:
+  - name: environment
+    displayName: environment name
+    type: string
+
+  - name: azureSubscription
+    displayName: Enter the Azure Serviceconntion
+    type: string
+
+  - name: SubscriptionId
+    displayName: Enter the Subscription id where the Azure sentinel workspace is deployed
+    type: string
+
+  - name: WorkspaceName
+    displayName: Enter the Azure Sentinel Workspace name
+    type: string
+
+  - name: EnableSentinel
+    displayName: Enable Azure Sentinel if not enabled
+    type: boolean
+
+  - name: analyticsRulesFile
+    displayName: path to Azure Sentinel Analytics ruile file
+    type: string
+
+  - name: huntingRulesFile
+    displayName: path to Azure Sentinel Hunting ruile file
+    type: string
+
+  - name: PlaybooksFolder
+    displayName: The path to the fodler with the playbook JSON files
+    type: string
+
+  - name: ConnectorsFile
+    displayName: The path to DataConnector json file
+    type: string
+
+  - name: WorkbooksFolder
+    displayName: The path to the folder which contains the Workbooks JSON files
+    type: string
+
+  - name: WorkbookSourceId
+    displayName: The id of resource instance to which the workbook will be associated
+    type: string
+
+  - name: ResourceGroupName
+    displayName: Enter the Resource group name for Playbooks and Workbooks
+    type: string
+
+  - name: ResourceGroupLocation
+    displayName: Enter the Resource group location for Playbooks and Workbooks
+    type: string
+
+jobs:
+  - deployment: 'Sentinel'
+    displayName: DeploySentinelSolution
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+            - task: PowerShell@2
+              displayName: 'Prepare environemnt'
+              inputs:
+                targetType: 'Inline'
+                script: |
+                  Install-Module AzSentinel -Scope CurrentUser -Force
+                  Import-Module AzSentinel
+                pwsh: true
+
+            - ${{ if eq(parameters.EnableSentinel, true) }}:
+              - task: AzurePowerShell@5
+                displayName: 'Enable and configure Azure Sentinel'
+                inputs:
+                  azureSubscription: ${{ parameters.azureSubscription }}
+                  ScriptType: 'InlineScript'
+                  Inline: |
+                    Set-AzSentinel -SubscriptionId ${{ parameters.SubscriptionId }} -WorkspaceName ${{ parameters.WorkspaceName }} -Confirm:$false
+                  azurePowerShellVersion: 'LatestVersion'
+                  pwsh: true
+
+            - ${{ if ne(parameters.PlaybooksFolder, '') }}:
+              - task: AzurePowerShell@4
+                displayName: 'Create and Update Playbooks'
+                inputs:
+                  azureSubscription: ${{ parameters.azureSubscription }}
+                  ScriptType: 'InlineScript'
+                  Inline: |
+                    $armTemplateFiles = Get-ChildItem -Path ${{ parameters.PlaybooksFolder }} -Filter *.json
+
+                    $rg = Get-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -ErrorAction SilentlyContinue
+                    if ($null -eq $rg) {
+                      New-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -Location ${{ parameters.ResourceGroupLocation }}
+                    }
+
+                    foreach ($armTemplate in $armTemplateFiles) {
+                      New-AzResourceGroupDeployment -ResourceGroupName ${{ parameters.ResourceGroupName }} -TemplateFile $armTemplate
+                    }
+                  azurePowerShellVersion: LatestVersion
+                  pwsh: true
+
+            - ${{ if ne(parameters.analyticsRulesFile, '') }}:
+              - task: AzurePowerShell@5
+                displayName: 'Create and Update Alert Rules'
+                inputs:
+                  azureSubscription: ${{ parameters.azureSubscription }}
+                  ScriptType: 'InlineScript'
+                  Inline: |
+                    Import-AzSentinelAlertRule -SubscriptionId ${{ parameters.SubscriptionId }} -WorkspaceName ${{ parameters.WorkspaceName }} -SettingsFile ${{ parameters.analyticsRulesFile }}
+                  azurePowerShellVersion: 'LatestVersion'
+                  pwsh: true
+
+            - ${{ if ne(parameters.huntingRulesFile, '') }}:
+              - task: AzurePowerShell@5
+                displayName: 'Create and Update Hunting Rules'
+                inputs:
+                  azureSubscription: ${{ parameters.azureSubscription }}
+                  ScriptType: 'InlineScript'
+                  Inline: |
+                    Import-AzSentinelHuntingRule -SubscriptionId ${{ parameters.SubscriptionId }} -WorkspaceName ${{ parameters.WorkspaceName }} -SettingsFile ${{ parameters.huntingRulesFile }}
+                  azurePowerShellVersion: 'LatestVersion'
+                  pwsh: true
+
+            - ${{ if ne(parameters.ConnectorsFile, '') }}:
+              - task: AzurePowerShell@5
+                displayName: 'Create and Update Connectors'
+                inputs:
+                  azureSubscription: ${{ parameters.azureSubscription }}
+                  ScriptType: 'InlineScript'
+                  Inline: |
+                    Import-AzSentinelDataConnector -SubscriptionId ${{ parameters.SubscriptionId }} -Workspace ${{ parameters.WorkspaceName }} -SettingsFile ${{ parameters.ConnectorsFile }}
+                  azurePowerShellVersion: LatestVersion
+                  pwsh: true
+
+            - ${{ if ne(parameters.WorkbooksFolder, '')}}:
+              - task: AzurePowerShell@4
+                displayName: 'Create and Update Workbooks'
+                inputs:
+                  azureSubscription: ${{ parameters.azureSubscription }}
+                  ScriptType: 'InlineScript'
+                  Inline: |
+                    $armTemplateFiles = Get-ChildItem -Path ${{ parameters.WorkbooksFolder }} -Filter *.json
+
+                    $rg = Get-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -ErrorAction SilentlyContinue
+                    if ($null -eq $rg) {
+                      New-AzResourceGroup -ResourceGroupName ${{ parameters.ResourceGroupName }} -Location ${{ parameters.ResourceGroupLocation }}
+                    }
+
+                    foreach ($armTemplate in $armTemplateFiles) {
+                      New-AzResourceGroupDeployment -ResourceGroupName ${{ parameters.ResourceGroupName }} -TemplateFile $armTemplate -WorkbookSourceId ${{ parameters.WorkbookSourceId }}
+                    }
+                  azurePowerShellVersion: LatestVersion
+                  pwsh: true
