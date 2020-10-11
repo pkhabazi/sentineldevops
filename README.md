@@ -4,7 +4,7 @@
 
 # Deploying and Managing Azure Sentinel – Ninja style
 A couple of months ago Javier and Philippe wrote a great blog on how to deploy, configure and maintain Azure Sentinel through Azure DevOps with IaC using AzSentinel. We are now a couple of months further and more and more functions are integrated in AzSentinel.
-So I decided to create a new Azure DevOps Pipeline which covers more than only the "deployment" part. I want to show that Pipelines are more than only deployment "tools" and they need to be implemented the right way with the right DevOps mindset for the best result. Or as I call it in this  post Ninja style :P **You can rad the complete post on my [blog](https://pkm-technology.com/?p=2373&preview=true&_thumbnail_id=2315)**
+So I decided to create a new Azure DevOps Pipeline which covers more than only the "deployment" part. I want to show that Pipelines are more than only deployment "tools" and they need to be implemented the right way with the right DevOps mindset for the best result. Or as I call it in this post Ninja style :P **You can read the complete post on my <a href="https://pkm-technology.com/deploying-and-managing-azure-sentinel-ninja-style/" target="_blank">blog</a>**
 
 ## The story behind DevOps and Pipelines
 Before we go deeper into the technical side, I first like to mention the idea behind it all. The reason I've invested so much time in order to build AzSentinel and DevOps pipelines. The main reason was to implement the "shift left" WoW. The term “shift left” refers to a practice in software development, in which teams focus on quality, work on problem prevention instead of detection, and begin testing earlier than ever before. The goal is to increase quality, shorten long test cycles and reduce the possibility of unpleasant surprises at the end of the development cycle—or, worse, in production. Azure Portal is a great portal, but when you log in and by accident remove or change an Analytic rule for example without any testing, approving or 4-eye principle, then you really have a challenge. You will probably find out something went wrong when you are troubleshooting to see why nothing happened in first place. And don't we all know that's way too late...
@@ -13,15 +13,15 @@ Shifting left requires two key DevOps practices: continuous testing and continuo
 
 ## Azure Sentinel deployment Ninja style
 
-Based on the shift left and DevOps WoW, I made the following design on how I think the process should look like. I will explain the design you see below in different parts.
+Based on the shift left and DevOps WoW, I made the design below on how I think the process should look like. I will explain the design in different parts. But first, let’s start with the underlying requirements..
 
 ![AzureSentinelNinjaStyle](images/AzureSentinelNinjaStyle.png)
 
 
 
 ## Links
-- Read the complete post on my [blog](https://pkm-technology.com/?p=2373&preview=true&_thumbnail_id=2315)
-- Read blog post from Javier and Philippe on [techcommunity](https://techcommunity.microsoft.com/t5/azure-sentinel/deploying-and-managing-azure-sentinel-as-code/ba-p/1131928)
+- Read the complete post on my <a href="https://pkm-technology.com/deploying-and-managing-azure-sentinel-ninja-style/" target="_blank">blog</a>
+- Read blog post from Javier and Philippe on <a href="https://techcommunity.microsoft.com/t5/azure-sentinel/deploying-and-managing-azure-sentinel-as-code/ba-p/1131928" target="_blank">techcommunity</a>
 
 ## Contributing
 
