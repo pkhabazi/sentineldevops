@@ -25,6 +25,7 @@ stages:
   - stage: Staging
     displayName: 'Deploying to Acceptance environment'
     condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release'))
+    dependsOn: Dev    # this stage runs after Dev
     jobs:
       - template: pipelines/steps.yml
         parameters:
@@ -45,6 +46,7 @@ stages:
   - stage: Production
     displayName: 'Deploying to Production environment'
     condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    dependsOn: Dev    # this stage runs after Dev
     jobs:
       - template: pipelines/steps.yml
         parameters:
