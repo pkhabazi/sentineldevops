@@ -25,7 +25,7 @@ Based on the shift left and DevOps WoW, I made the design below on how I think t
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CODE OF CONDUCT](CODE_OF_CONDUCT.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Author
 
