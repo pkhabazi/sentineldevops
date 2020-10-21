@@ -1,6 +1,10 @@
 # This is the main pipelien which covers all the stages
 # The tasks are stored in pipelines/steps.yml
 # you can read more about this:
+trigger:
+  - master
+  - release
+  - development
 
 stages:
   - stage: Dev
