@@ -123,7 +123,7 @@ jobs:
                   azureSubscription: ${{ parameters.azureSubscription }}
                   ScriptType: 'InlineScript'
                   Inline: |
-                    Import-AzSentinelHuntingRule -SubscriptionId ${{ parameters.SubscriptionId }} -WorkspaceName ${{ parameters.WorkspaceName }} -SettingsFile ${{ parameters.huntingRulesFile }}
+                    Import-AzSentinelHuntingRule -SubscriptionId ${{ parameters.SubscriptionId }} -WorkspaceName ${{ parameters.WorkspaceName }} -SettingsFile ${{ parameters.huntingRulesFile }} -Confirm:$false
                   azurePowerShellVersion: 'LatestVersion'
                   pwsh: true
 
